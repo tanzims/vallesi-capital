@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Replace with your Formspree endpoint after signing up at https://formspree.io
-// Or use Web3Forms: https://web3forms.com (set FORM_ENDPOINT to their URL).
-const FORM_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
+const FORM_ENDPOINT = "/api/contact";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -29,11 +27,12 @@ export function ContactModal({ open, onClose }: { open: boolean; onClose: () => 
     setError(null);
 
     const formData = new FormData(e.currentTarget);
+    const payload = Object.fromEntries(formData.entries());
     try {
       const res = await fetch(FORM_ENDPOINT, {
         method: "POST",
-        headers: { Accept: "application/json" },
-        body: formData,
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         setStatus("success");
@@ -103,6 +102,14 @@ export function ContactModal({ open, onClose }: { open: boolean; onClose: () => 
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="p-8 md:p-10 space-y-6">
+                  <input
+                    type="text"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="absolute -left-[9999px] w-px h-px opacity-0"
+                  />
                   <div className="grid md:grid-cols-2 gap-6">
                     <Field label="First Name" name="firstName" required />
                     <Field label="Last Name" name="lastName" required />
