@@ -23,10 +23,11 @@ export function ContactModal({ open, onClose }: { open: boolean; onClose: () => 
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setStatus("submitting");
     setError(null);
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const payload = Object.fromEntries(formData.entries());
     try {
       const res = await fetch(FORM_ENDPOINT, {
@@ -36,7 +37,7 @@ export function ContactModal({ open, onClose }: { open: boolean; onClose: () => 
       });
       if (res.ok) {
         setStatus("success");
-        e.currentTarget.reset();
+        form.reset();
       } else {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || "Submission failed");
